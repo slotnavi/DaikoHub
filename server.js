@@ -42,6 +42,83 @@ app.get("/health", (req, res) => {
   });
 });
 
+// ===== 管理画面 → Discord返信API =====
+app.post("/api/tickets/:id/reply", express.json(), async (req, res) => {
+  try {
+    const ticketId = req.params.id;
+    const content = req.body?.content?.trim();
+
+    if (!content) {
+      return res.status(400).json({
+        ok: false,
+        error: "メッセージが空です"
+      });
+    }
+
+    // Supabaseからチケットを取得
+    const { data: ticket, error } = await supabase
+      .from("tickets")
+      .select("*")
+      .eq("id", ticketId)
+      .single();
+
+    if (error || !ticket) {
+      console.error("Ticket lookup error:", error);
+      return res.status(404).json({
+        ok: false,
+        error: "チケットが見つかりません"
+      });
+    }
+
+    if (!ticket.channel_id) {
+      return res.status(400).json({
+        ok: false,
+        error: "DiscordチャンネルIDがありません"
+      });
+    }
+
+    // Discordのチケットへ送信
+    const channel = await client.channels.fetch(ticket.channel_id);
+
+    if (!channel || !channel.isTextBased()) {
+      return res.status(400).json({
+        ok: false,
+        error: "送信先チャンネルが見つかりません"
+      });
+    }
+
+    const sent = await channel.send(content);
+
+    // 送信内容もmessagesへ保存
+    const { error: messageError } = await supabase
+      .from("messages")
+      .insert({
+        ticket_id: ticket.id,
+        external_message_id: sent.id,
+        sender: "admin",
+        sender_name: "管理者",
+        content: content
+      });
+
+    if (messageError) {
+      console.error("Message DB error:", messageError);
+    }
+
+    return res.json({
+      ok: true,
+      messageId: sent.id
+    });
+
+  } catch (error) {
+    console.error("Admin reply error:", error);
+
+    return res.status(500).json({
+      ok: false,
+      error: "送信に失敗しました"
+    });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Web server started on ${PORT}`);
 });
