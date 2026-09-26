@@ -538,8 +538,7 @@ deadline:
 } catch (extractError) {
   console.error("Intake extraction failed:", extractError);
 }
-
- const conversation = (history || []).map((m) => {
+const conversation = (history || []).map((m) => {
   const isStaff =
     m.sender === "bot" ||
     m.sender === "admin" ||
@@ -550,7 +549,7 @@ deadline:
 
   return `${role}: ${m.content}`;
 }).join("\n");
-
+  
   console.log("[AI DEBUG] OpenAI送信開始");
   const aiResponse = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
