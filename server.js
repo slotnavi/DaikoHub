@@ -424,6 +424,7 @@ client.on("messageCreate", async (message) => {
 try {
   console.log("[AI DEBUG]", { ticketId: ticket.id, ai_enabled: ticket.ai_enabled });
   if (!ticket.ai_enabled) return;
+  console.log("[AI DEBUG] 履歴取得開始");
 
   // このチケットの過去メッセージを取得
   const { data: history, error: historyError } = await supabase
