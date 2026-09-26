@@ -964,7 +964,7 @@ select{
    <button class="settings-btn" onclick="showPlanSettings()">
    let plans = JSON.parse(localStorage.getItem("daikohub_plans") || "[]");
 
-function addPlan() {
+async function addPlan() {
   const name = document.getElementById("planName").value.trim();
   const description = document.getElementById("planDescription").value.trim();
 
@@ -973,19 +973,33 @@ function addPlan() {
     return;
   }
 
-  plans.push({
-    id: Date.now(),
-    service: "スコアタ代行",
-    name,
-    description
-  });
+  try {
+    const res = await fetch("/api/plans", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name,
+        description
+      })
+    });
 
-  localStorage.setItem("daikohub_plans", JSON.stringify(plans));
+    const result = await res.json();
 
-  document.getElementById("planName").value = "";
-  document.getElementById("planDescription").value = "";
+    if (!res.ok) {
+      throw new Error(result.error || "プランの保存に失敗しました");
+    }
 
-  renderPlans();
+    document.getElementById("planName").value = "";
+    document.getElementById("planDescription").value = "";
+
+    await loadPlans();
+
+  } catch (error) {
+    console.error(error);
+    alert("プランの保存に失敗しました: " + error.message);
+  }
 }
 
 function renderPlans() {
