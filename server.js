@@ -438,6 +438,7 @@ try {
     console.error("History error:", historyError);
     return;
   }
+  console.log("[AI DEBUG] 履歴取得成功", history?.length);
 
   const conversation = (history || []).map((m) => {
     const role = m.sender === "customer" ? "お客様" : "スタッフ";
