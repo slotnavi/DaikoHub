@@ -962,76 +962,8 @@ select{
    <div id="tickets">読み込み中...</div>
    
    <button class="settings-btn" onclick="showPlanSettings()">
-   let plans = JSON.parse(localStorage.getItem("daikohub_plans") || "[]");
-
-async function addPlan() {
-  const name = document.getElementById("planName").value.trim();
-  const description = document.getElementById("planDescription").value.trim();
-
-  if (!name) {
-    alert("プラン名を入力してください");
-    return;
-  }
-
-  try {
-    const res = await fetch("/api/plans", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        name,
-        description
-      })
-    });
-
-    const result = await res.json();
-
-    if (!res.ok) {
-      throw new Error(result.error || "プランの保存に失敗しました");
-    }
-
-    document.getElementById("planName").value = "";
-    document.getElementById("planDescription").value = "";
-
-    await loadPlans();
-
-  } catch (error) {
-    console.error(error);
-    alert("プランの保存に失敗しました: " + error.message);
-  }
-}
-async function loadPlans() {
-  try {
-    const res = await fetch("/api/plans");
-    const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data.error || "プランの読み込みに失敗しました");
-    }
-
-    plans = data;
-    renderPlans();
-
-  } catch (error) {
-    console.error(error);
-
-    const list = document.getElementById("planList");
-    if (list) {
-      list.innerHTML = "プランの読み込みに失敗しました";
-    }
-  }
-}
-
-function renderPlans() {
-  const list = document.getElementById("planList");
-  if (!list) return;
-
-  if (plans.length === 0) {
-    list.innerHTML = "まだプランは登録されていません";
-    return;
-  }
- 
+     ⚙️ プラン設定
+</button>
  </section>
 
  <section class="content" id="content">
