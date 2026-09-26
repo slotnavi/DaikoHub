@@ -914,6 +914,10 @@ select{
    </div>
    <div class="title">受信トレイ</div>
    <div id="tickets">読み込み中...</div>
+   
+   <button class="settings-btn" onclick="showPlanSettings()">
+  ⚙️ プラン設定
+</button>
  </section>
 
  <section class="content" id="content">
