@@ -928,6 +928,40 @@ select{
 <script>
 let selectedId = null;
 let previousIds = new Set();
+function showPlanSettings() {
+  selectedId = null;
+
+  document.getElementById("content").innerHTML = \`
+    <h2>⚙️ プラン設定</h2>
+
+    <div style="margin-top:20px;">
+      <h3>スコアタ代行</h3>
+
+      <label>プラン名</label><br>
+      <input
+        id="planName"
+        type="text"
+        placeholder="例：通常プラン"
+        style="width:100%;padding:10px;margin:8px 0 15px;"
+      >
+
+      <label>プラン説明</label><br>
+      <textarea
+        id="planDescription"
+        placeholder="例：通常のスコアタ代行"
+        style="width:100%;padding:10px;min-height:80px;margin:8px 0 15px;"
+      ></textarea>
+
+      <button onclick="addPlan()">
+        ＋ プランを追加
+      </button>
+
+      <div id="planList" style="margin-top:20px;">
+        まだプランは登録されていません
+      </div>
+    </div>
+  \`;
+}
 
 const statusNames = {
  new:"🟢 新規",
