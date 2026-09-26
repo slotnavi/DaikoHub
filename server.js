@@ -486,7 +486,11 @@ ${conversation}
     return;
   }
 
-  const reply = aiData.output_text?.trim();
+  const reply = aiData.output
+  ?.flatMap(item => item.content || [])
+  ?.find(item => item.type === "output_text")
+  ?.text
+  ?.trim();
   console.log("[AI DEBUG] AI返信内容", reply);
 
   if (!reply) return;
