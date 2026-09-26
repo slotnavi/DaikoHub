@@ -733,11 +733,11 @@ async function openTicket(id){
           id="replyInput"
           type="text"
           placeholder="Discordへ返信..."
-          onkeydown="if(event.key==='Enter') sendReply(${ticket.id})"
+          onkeydown="if(event.key==='Enter') sendReply(selectedId)"
         >
         <button
           id="replyButton"
-          onclick="sendReply(${ticket.id})"
+          onclick="sendReply(selectedId)"
         >
           送信
         </button>
