@@ -514,11 +514,18 @@ deadline:
         deadline: extracted.deadline ?? oldDetails.deadline ?? null
       };
 
-      const complete = Boolean(
-        newDetails.service &&
-        newDetails.target &&
-        newDetails.deadline
-      );
+    const basicInfoComplete = Boolean(
+  newDetails.service &&
+  newDetails.target &&
+  newDetails.deadline
+);
+
+const noMoreRequests =
+  /特にない|特になし|ないです|ありません|大丈夫です|ないよ|なし/i.test(
+    message.content
+  );
+
+const complete = basicInfoComplete && noMoreRequests;
 
       const { error: updateError } = await supabase
         .from("tickets")
