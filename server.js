@@ -543,6 +543,24 @@ const complete = basicInfoComplete && noMoreRequests;
         // この後の受付AIにも最新情報を使わせる
         ticket.request_details = newDetails;
         ticket.intake_complete = complete;
+        
+        if (complete) {
+  const finalMessage =
+    "ありがとうございます。ご希望内容を確認しました！スタッフが料金を確認しますので、少々お待ちください。";
+
+  await message.reply(finalMessage);
+
+  await supabase.from("messages").insert({
+    ticket_id: ticket.id,
+    external_message_id: null,
+    sender: "bot",
+    sender_name: "AI受付",
+    content: finalMessage
+  });
+
+  console.log("[INTAKE COMPLETE]", ticket.id);
+  return;
+}
       }
 
     } catch (parseError) {
