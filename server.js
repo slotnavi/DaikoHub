@@ -1003,7 +1003,10 @@ function showPlanSettings() {
       </div>
     </div>
   \`;
+  renderPlans();
 }
+let plans = ...
+function addPlan() {
 
 const statusNames = {
  new:"🟢 新規",
