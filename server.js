@@ -1001,6 +1001,27 @@ async function addPlan() {
     alert("プランの保存に失敗しました: " + error.message);
   }
 }
+async function loadPlans() {
+  try {
+    const res = await fetch("/api/plans");
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || "プランの読み込みに失敗しました");
+    }
+
+    plans = data;
+    renderPlans();
+
+  } catch (error) {
+    console.error(error);
+
+    const list = document.getElementById("planList");
+    if (list) {
+      list.innerHTML = "プランの読み込みに失敗しました";
+    }
+  }
+}
 
 function renderPlans() {
   const list = document.getElementById("planList");
