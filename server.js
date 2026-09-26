@@ -715,7 +715,53 @@ if (
 
 client.login(process.env.DISCORD_TOKEN);
 // ===== DaikoHub 管理画面 API =====
+// ===== プランAPI =====
 
+// プラン一覧取得
+app.get("/api/plans", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("plans")
+      .select("*")
+      .eq("active", true)
+      .order("created_at", { ascending: true });
+
+    if (error) throw error;
+
+    res.json(data);
+  } catch (error) {
+    console.error("GET plans error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// プラン追加
+app.post("/api/plans", express.json(), async (req, res) => {
+  try {
+    const { name, description } = req.body;
+
+    if (!name?.trim()) {
+      return res.status(400).json({ error: "プラン名が必要です" });
+    }
+
+    const { data, error } = await supabase
+      .from("plans")
+      .insert({
+        service: "スコアタ代行",
+        name: name.trim(),
+        description: description?.trim() || ""
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.json({ ok: true, plan: data });
+  } catch (error) {
+    console.error("POST plans error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
 // チケット一覧
 app.get("/api/tickets", async (req, res) => {
   try {
