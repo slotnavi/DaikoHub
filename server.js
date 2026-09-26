@@ -1031,16 +1031,7 @@ function renderPlans() {
     list.innerHTML = "まだプランは登録されていません";
     return;
   }
-
-  list.innerHTML = plans.map(plan => \`
-    <div style="padding:12px;border:1px solid #333;border-radius:8px;margin-bottom:10px;">
-      <b>\${esc(plan.name)}</b>
-      <div style="margin-top:5px;">\${esc(plan.description)}</div>
-    </div>
-  \`).join("");
-}
-  ⚙️ プラン設定
-</button>
+ 
  </section>
 
  <section class="content" id="content">
