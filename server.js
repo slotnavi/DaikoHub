@@ -440,10 +440,17 @@ try {
   }
   console.log("[AI DEBUG] 履歴取得成功", history?.length);
 
-  const conversation = (history || []).map((m) => {
-    const role = m.sender === "customer" ? "お客様" : "スタッフ";
-    return `${role}: ${m.content}`;
-  }).join("\n");
+ const conversation = (history || []).map((m) => {
+  const isStaff =
+    m.sender === "bot" ||
+    m.sender === "admin" ||
+    m.sender_name === "AI受付" ||
+    m.sender_name === "管理者";
+
+  const role = isStaff ? "受付スタッフ" : "お客様";
+
+  return `${role}: ${m.content}`;
+}).join("\n");
 
   console.log("[AI DEBUG] OpenAI送信開始");
   const aiResponse = await fetch("https://api.openai.com/v1/responses", {
