@@ -917,6 +917,7 @@ let previousIds = new Set();
 const statusNames = {
  new:"🟢 新規",
  ai_intake:"🤖 AI受付中",
+ waiting_price: "💴 料金確認待ち",
  waiting_payment:"💰 入金待ち",
  working:"🔵 作業中",
  waiting:"🟡 要確認",
