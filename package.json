@@ -1,1 +1,14 @@
-
+{
+  "name": "daikohub-bot",
+  "version": "1.0.0",
+  "description": "DaikoHub Discord Ticket Bot",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.22.1",
+    "express": "^5.1.0"
+  }
+}
