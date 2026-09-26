@@ -916,6 +916,48 @@ select{
    <div id="tickets">読み込み中...</div>
    
    <button class="settings-btn" onclick="showPlanSettings()">
+   let plans = JSON.parse(localStorage.getItem("daikohub_plans") || "[]");
+
+function addPlan() {
+  const name = document.getElementById("planName").value.trim();
+  const description = document.getElementById("planDescription").value.trim();
+
+  if (!name) {
+    alert("プラン名を入力してください");
+    return;
+  }
+
+  plans.push({
+    id: Date.now(),
+    service: "スコアタ代行",
+    name,
+    description
+  });
+
+  localStorage.setItem("daikohub_plans", JSON.stringify(plans));
+
+  document.getElementById("planName").value = "";
+  document.getElementById("planDescription").value = "";
+
+  renderPlans();
+}
+
+function renderPlans() {
+  const list = document.getElementById("planList");
+  if (!list) return;
+
+  if (plans.length === 0) {
+    list.innerHTML = "まだプランは登録されていません";
+    return;
+  }
+
+  list.innerHTML = plans.map(plan => \`
+    <div style="padding:12px;border:1px solid #333;border-radius:8px;margin-bottom:10px;">
+      <b>\${esc(plan.name)}</b>
+      <div style="margin-top:5px;">\${esc(plan.description)}</div>
+    </div>
+  \`).join("");
+}
   ⚙️ プラン設定
 </button>
  </section>
