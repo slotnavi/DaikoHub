@@ -439,6 +439,105 @@ try {
     return;
   }
   console.log("[AI DEBUG] 履歴取得成功", history?.length);
+  // ===== 依頼情報をAIで抽出 =====
+try {
+  const extractResponse = await fetch("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+    },
+    body: JSON.stringify({
+      model: "gpt-5.4-mini",
+      input: `
+以下は「妖怪ウォッチ ぷにぷに」の代行受付の会話です。
+
+${conversation}
+
+現在保存されている情報:
+${JSON.stringify(ticket.request_details || {})}
+
+会話から確実に分かる情報だけを抽出してください。
+
+JSONだけを返してください。
+説明文やマークダウンは付けないでください。
+
+形式:
+{
+  "service": null,
+  "target": null,
+  "deadline": null
+}
+
+service:
+依頼の種類。例: スコアタ、イベント周回、Yポイントなど。
+
+target:
+具体的な希望内容。例: 100億。
+
+deadline:
+希望期限。例: 今日中、明日まで。
+
+分からない項目はnullにしてください。
+すでに保存されている情報は、会話で変更されていない限り維持してください。
+`
+    })
+  });
+
+  const extractData = await extractResponse.json();
+
+  const extractText = extractData.output
+    ?.flatMap(item => item.content || [])
+    ?.find(item => item.type === "output_text")
+    ?.text
+    ?.trim();
+
+  if (extractResponse.ok && extractText) {
+    try {
+      const extracted = JSON.parse(extractText);
+
+      const oldDetails = ticket.request_details || {};
+
+      const newDetails = {
+        service: extracted.service ?? oldDetails.service ?? null,
+        target: extracted.target ?? oldDetails.target ?? null,
+        deadline: extracted.deadline ?? oldDetails.deadline ?? null
+      };
+
+      const complete = Boolean(
+        newDetails.service &&
+        newDetails.target &&
+        newDetails.deadline
+      );
+
+      const { error: updateError } = await supabase
+        .from("tickets")
+        .update({
+          request_details: newDetails,
+          intake_complete: complete
+        })
+        .eq("id", ticket.id);
+
+      if (updateError) {
+        console.error("Intake update error:", updateError);
+      } else {
+        console.log("[INTAKE SAVED]", newDetails, "complete:", complete);
+
+        // この後の受付AIにも最新情報を使わせる
+        ticket.request_details = newDetails;
+        ticket.intake_complete = complete;
+      }
+
+    } catch (parseError) {
+      console.error("Intake JSON parse error:", extractText);
+    }
+  } else {
+    console.error("Intake extraction error:", extractData);
+  }
+
+} catch (extractError) {
+  console.error("Intake extraction failed:", extractError);
+}
 
  const conversation = (history || []).map((m) => {
   const isStaff =
