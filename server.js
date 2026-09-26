@@ -1084,7 +1084,7 @@ function showPlanSettings() {
       </div>
     </div>
   \`;
-  renderPlans();
+  loadPlans();
 }
 let plans = JSON.parse(localStorage.getItem("daikohub_plans") || "[]");
 function addPlan() {
