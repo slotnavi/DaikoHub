@@ -119,6 +119,44 @@ app.post("/api/tickets/:id/reply", express.json(), async (req, res) => {
   }
 });
 
+// ===== OpenAI 接続テスト =====
+app.get("/api/ai-test", async (req, res) => {
+  try {
+    const response = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: "gpt-5.4-mini",
+        input: "「AI接続成功」とだけ返してください。"
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("OpenAI test error:", data);
+      return res.status(500).json({
+        ok: false,
+        error: data
+      });
+    }
+
+    return res.json({
+      ok: true,
+      reply: data.output_text
+    });
+
+  } catch (error) {
+    console.error("AI test error:", error);
+    return res.status(500).json({
+      ok: false,
+      error: error.message
+    });
+  }
+});
 app.listen(PORT, () => {
   console.log(`Web server started on ${PORT}`);
 });
