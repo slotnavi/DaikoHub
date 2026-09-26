@@ -479,6 +479,7 @@ ${conversation}
   });
 
   const aiData = await aiResponse.json();
+  console.log("[AI DEBUG] OpenAI応答", aiResponse.status);
 
   if (!aiResponse.ok) {
     console.error("OpenAI error:", aiData);
