@@ -420,6 +420,92 @@ client.on("messageCreate", async (message) => {
       messageError
     );
   }
+  // ===== AI 自動受付 =====
+try {
+  if (!ticket.ai_enabled) return;
+
+  // このチケットの過去メッセージを取得
+  const { data: history, error: historyError } = await supabase
+    .from("messages")
+    .select("sender, sender_name, content")
+    .eq("ticket_id", ticket.id)
+    .order("created_at", { ascending: true })
+    .limit(20);
+
+  if (historyError) {
+    console.error("History error:", historyError);
+    return;
+  }
+
+  const conversation = (history || []).map((m) => {
+    const role = m.sender === "customer" ? "お客様" : "スタッフ";
+    return `${role}: ${m.content}`;
+  }).join("\n");
+
+  const aiResponse = await fetch("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+    },
+    body: JSON.stringify({
+      model: "gpt-5.4-mini",
+      input: `
+あなたはゲーム代行サービス「DaikoHub」の受付スタッフです。
+
+お客様との会話:
+${conversation}
+
+【役割】
+お客様が希望している代行内容を自然な会話で聞き取ってください。
+
+【ルール】
+・日本語で返信する
+・短く、親しみやすくする
+・一度に質問しすぎない
+・すでに聞いた内容を何度も質問しない
+・分からない情報だけ質問する
+・料金を勝手に確定しない
+・返金、クレーム、トラブル、特殊な依頼は「スタッフが確認します」と案内する
+・パスワードや認証コードなどの秘密情報をDiscord上で聞かない
+・説明は長くしない
+・返信文だけを出力する
+`
+    })
+  });
+
+  const aiData = await aiResponse.json();
+
+  if (!aiResponse.ok) {
+    console.error("OpenAI error:", aiData);
+    return;
+  }
+
+  const reply = aiData.output_text?.trim();
+
+  if (!reply) return;
+
+  // DiscordへAI返信
+  const sent = await message.channel.send(reply);
+
+  // AI返信もDBへ保存
+  const { error: aiMessageError } = await supabase
+    .from("messages")
+    .insert({
+      ticket_id: ticket.id,
+      external_message_id: sent.id,
+      sender: "bot",
+      sender_name: "AI受付",
+      content: reply
+    });
+
+  if (aiMessageError) {
+    console.error("AI message DB error:", aiMessageError);
+  }
+
+} catch (aiError) {
+  console.error("AI auto reply error:", aiError);
+}
 });
 
 // ========================
