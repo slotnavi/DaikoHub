@@ -728,6 +728,20 @@ async function openTicket(id){
    \`).join("") :
    '<div class="empty">まだメッセージがありません</div>'}
   </div>
+     <div class="reply-box">
+        <input
+          id="replyInput"
+          type="text"
+          placeholder="Discordへ返信..."
+          onkeydown="if(event.key==='Enter') sendReply(${ticket.id})"
+        >
+        <button
+          id="replyButton"
+          onclick="sendReply(${ticket.id})"
+        >
+          送信
+        </button>
+      </div>
  \`;
 
  loadTickets();
@@ -753,6 +767,54 @@ setInterval(()=>{
  loadTickets();
  if(selectedId) openTicket(selectedId);
 },3000);
+  setInterval(()=>{
+    loadTickets();
+    if(selectedId) openTicket(selectedId);
+  },3000);
+
+
+// ↓ここに追加
+async function sendReply(ticketId) {
+  const input = document.getElementById("replyInput");
+  const button = document.getElementById("replyButton");
+  const content = input.value.trim();
+
+  if (!content) return;
+
+  button.disabled = true;
+  button.textContent = "送信中...";
+
+  try {
+    const response = await fetch("/api/tickets/" + ticketId + "/reply", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ content })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.ok) {
+      alert(data.error || "送信に失敗しました");
+      return;
+    }
+
+    input.value = "";
+    await openTicket(ticketId);
+
+  } catch (error) {
+    console.error(error);
+    alert("送信に失敗しました");
+  } finally {
+    button.disabled = false;
+    button.textContent = "送信";
+  }
+}
+
+</script>
+</body>
+</html>
 </script>
 
 </body>
