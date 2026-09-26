@@ -487,6 +487,7 @@ ${conversation}
   }
 
   const reply = aiData.output_text?.trim();
+  console.log("[AI DEBUG] AI返信内容", reply);
 
   if (!reply) return;
 
