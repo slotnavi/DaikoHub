@@ -422,6 +422,7 @@ client.on("messageCreate", async (message) => {
   }
   // ===== AI 自動受付 =====
 try {
+  console.log("[AI DEBUG]", { ticketId: ticket.id, ai_enabled: ticket.ai_enabled });
   if (!ticket.ai_enabled) return;
 
   // このチケットの過去メッセージを取得
