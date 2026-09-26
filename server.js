@@ -545,6 +545,13 @@ const complete = basicInfoComplete && noMoreRequests;
         ticket.intake_complete = complete;
         
         if (complete) {
+          await supabase
+  .from("tickets")
+  .update({
+    status: "waiting_price",
+    updated_at: new Date().toISOString()
+  })
+  .eq("id", ticket.id);
   const finalMessage =
     "ありがとうございます。ご希望内容を確認しました！スタッフが料金を確認しますので、少々お待ちください。";
 
