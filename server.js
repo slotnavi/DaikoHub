@@ -1087,7 +1087,6 @@ function showPlanSettings() {
   loadPlans();
 }
 let plans = JSON.parse(localStorage.getItem("daikohub_plans") || "[]");
-function addPlan() {
 
 const statusNames = {
  new:"🟢 新規",
