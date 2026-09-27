@@ -403,7 +403,18 @@ client.on("messageCreate", async (message) => {
   }
 
   if (!ticket) return;
+// ===== 登録プランを取得 =====
+const { data: activePlans, error: plansError } = await supabase
+  .from("plans")
+  .select("*")
+  .eq("active", true)
+  .order("created_at", { ascending: true });
 
+if (plansError) {
+  console.error("Plans lookup error:", plansError);
+}
+
+console.log("[ACTIVE PLANS]", activePlans);
   const { error: messageError } = await supabase
     .from("messages")
     .insert({
