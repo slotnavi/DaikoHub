@@ -771,13 +771,13 @@ if (
   process.exit(1);
 }
 
+console.log("[DISCORD LOGIN] ログイン開始");
+
 client.login(process.env.DISCORD_TOKEN)
   .then(() => {
-    clearTimeout(loginTimeout);
     console.log("[DISCORD LOGIN SUCCESS]");
   })
   .catch(error => {
-    clearTimeout(loginTimeout);
     console.error("[DISCORD LOGIN ERROR]", error);
   });
 
