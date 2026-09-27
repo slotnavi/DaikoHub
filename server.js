@@ -1009,6 +1009,77 @@ function showPlanSettings() {
   \`;
   loadPlans();
 }
+async function addPlan() {
+  const name = document.getElementById("planName").value.trim();
+  const description = document.getElementById("planDescription").value.trim();
+
+  if (!name) {
+    alert("プラン名を入力してください");
+    return;
+  }
+
+  try {
+    const res = await fetch("/api/plans", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name,
+        description
+      })
+    });
+
+    const result = await res.json();
+
+    if (!res.ok) {
+      throw new Error(result.error || "プランの保存に失敗しました");
+    }
+
+    document.getElementById("planName").value = "";
+    document.getElementById("planDescription").value = "";
+
+    await loadPlans();
+
+  } catch (error) {
+    console.error("addPlan error:", error);
+    alert("プランの保存に失敗しました: " + error.message);
+  }
+}
+
+async function loadPlans() {
+  try {
+    const res = await fetch("/api/plans");
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || "プランの読み込みに失敗しました");
+    }
+
+    const list = document.getElementById("planList");
+    if (!list) return;
+
+    if (!data.length) {
+      list.innerHTML = "まだプランは登録されていません";
+      return;
+    }
+
+    list.innerHTML = data.map(plan => `
+      <div style="padding:12px;border:1px solid #333;border-radius:8px;margin-bottom:10px;">
+        <b>${esc(plan.name)}</b>
+        <div style="margin-top:5px;">${esc(plan.description || "")}</div>
+      </div>
+    `).join("");
+
+  } catch (error) {
+    console.error("loadPlans error:", error);
+
+    const list = document.getElementById("planList");
+    if (list) {
+      list.innerHTML = "プランの読み込みに失敗しました";
+    }
+  }
+}
 let plans = JSON.parse(localStorage.getItem("daikohub_plans") || "[]");
 
 const statusNames = {
