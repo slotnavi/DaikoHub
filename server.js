@@ -772,8 +772,28 @@ if (
 }
 
 console.log("[DISCORD LOGIN] ログイン開始");
+
+const loginTimeout = setTimeout(() => {
+  console.error("[DISCORD LOGIN TIMEOUT] 15秒以内にDiscordへ接続できませんでした");
+}, 15000);
+
 client.login(process.env.DISCORD_TOKEN)
-  .catch(error => console.error("[DISCORD LOGIN ERROR]", error));
+  .then(() => {
+    clearTimeout(loginTimeout);
+    console.log("[DISCORD LOGIN SUCCESS]");
+  })
+  .catch(error => {
+    clearTimeout(loginTimeout);
+    console.error("[DISCORD LOGIN ERROR]", error);
+  });
+
+client.on("error", error => {
+  console.error("[DISCORD CLIENT ERROR]", error);
+});
+
+client.on("shardError", error => {
+  console.error("[DISCORD SHARD ERROR]", error);
+});
 // ===== DaikoHub 管理画面 API =====
 // ===== プランAPI =====
 
