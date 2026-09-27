@@ -545,15 +545,34 @@ const complete = basicInfoComplete && noMoreRequests;
         ticket.intake_complete = complete;
         
         if (complete) {
-          await supabase
-  .from("tickets")
-  .update({
-    status: "waiting_price",
-    updated_at: new Date().toISOString()
-  })
-  .eq("id", ticket.id);
-  const finalMessage =
-    "ありがとうございます。ご希望内容を確認しました！スタッフが料金を確認しますので、少々お待ちください。";
+  // 登録済みプランを取得
+  const { data: plans, error: plansError } = await supabase
+    .from("plans")
+    .select("*")
+    .eq("active", true)
+    .order("created_at", { ascending: true });
+
+  if (plansError) {
+    console.error("Plan fetch error:", plansError);
+  }
+
+  let finalMessage;
+
+  if (plans && plans.length > 0) {
+    const planText = plans.map((plan, index) => {
+      return `${index + 1}. ${plan.name}\n${plan.description || ""}`;
+    }).join("\n\n");
+
+    finalMessage =
+      "ありがとうございます！依頼内容を確認しました。\n\n" +
+      "ご希望のプランを選んでください👇\n\n" +
+      planText +
+      "\n\n希望するプラン名、または番号を送ってください。";
+  } else {
+    finalMessage =
+      "ありがとうございます！依頼内容を確認しました。\n" +
+      "スタッフが料金を確認しますので、少々お待ちください。";
+  }
 
   await message.reply(finalMessage);
 
@@ -565,7 +584,7 @@ const complete = basicInfoComplete && noMoreRequests;
     content: finalMessage
   });
 
-  console.log("[INTAKE COMPLETE]", ticket.id);
+  console.log("[PLAN SELECTION START]", ticket.id);
   return;
 }
       }
