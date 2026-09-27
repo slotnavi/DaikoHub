@@ -596,6 +596,20 @@ const complete = basicInfoComplete && noMoreRequests;
   });
 
   console.log("[PLAN SELECTION START]", ticket.id);
+          // ===== 受付完了 → 料金確認待ち =====
+const { error: waitingPriceError } = await supabase
+  .from("tickets")
+  .update({
+    status: "waiting_price",
+    updated_at: new Date().toISOString()
+  })
+  .eq("id", ticket.id);
+
+if (waitingPriceError) {
+  console.error("[WAITING PRICE ERROR]", waitingPriceError);
+} else {
+  console.log("[WAITING PRICE]", ticket.id);
+}
   return;
 }
       }
