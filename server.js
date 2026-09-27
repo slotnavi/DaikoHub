@@ -771,7 +771,9 @@ if (
   process.exit(1);
 }
 
-client.login(process.env.DISCORD_TOKEN);
+console.log("[DISCORD LOGIN] ログイン開始");
+client.login(process.env.DISCORD_TOKEN)
+  .catch(error => console.error("[DISCORD LOGIN ERROR]", error));
 // ===== DaikoHub 管理画面 API =====
 // ===== プランAPI =====
 
