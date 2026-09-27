@@ -1064,12 +1064,12 @@ async function loadPlans() {
       return;
     }
 
-    list.innerHTML = data.map(plan => `
-      <div style="padding:12px;border:1px solid #333;border-radius:8px;margin-bottom:10px;">
-        <b>${esc(plan.name)}</b>
-        <div style="margin-top:5px;">${esc(plan.description || "")}</div>
-      </div>
-    `).join("");
+    list.innerHTML = data.map(plan =>
+  '<div style="padding:12px;border:1px solid #333;border-radius:8px;margin-bottom:10px;">' +
+    '<b>' + esc(plan.name) + '</b>' +
+    '<div style="margin-top:5px;">' + esc(plan.description || "") + '</div>' +
+  '</div>'
+).join("");
 
   } catch (error) {
     console.error("loadPlans error:", error);
