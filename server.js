@@ -771,21 +771,6 @@ if (
   process.exit(1);
 }
 
-console.log("[DISCORD LOGIN] ログイン開始");
-
-const loginTimeout = setTimeout(() => {
-  console.error("[DISCORD LOGIN TIMEOUT] 15秒以内にDiscordへ接続できませんでした");
-}, 15000);
-console.log("[DISCORD TEST] Gateway確認開始");
-
-fetch("https://discord.com/api/v10/gateway")
-  .then(async (res) => {
-    console.log("[DISCORD TEST] Gateway HTTP:", res.status);
-    console.log("[DISCORD TEST] Gateway Response:", await res.text());
-  })
-  .catch((err) => {
-    console.error("[DISCORD TEST] Gateway接続失敗:", err);
-  });
 client.login(process.env.DISCORD_TOKEN)
   .then(() => {
     clearTimeout(loginTimeout);
