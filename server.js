@@ -1440,6 +1440,20 @@ async function openTicket(id){
     </button>
   </div>
 </div>
+<div style="margin-top:15px;padding:15px;background:#151923;border-radius:10px;">
+  <div style="font-weight:bold;margin-bottom:10px;">💳 支払い案内</div>
+
+  <input
+    id="paymentUrlInput"
+    type="text"
+    placeholder="PayPayなどの支払いURLを貼り付け"
+    style="width:100%;padding:10px;border-radius:8px;border:1px solid #343a49;margin-bottom:8px;"
+  >
+
+  <button onclick="sendPaymentGuide('\${t.id}')">
+    支払い案内を送信
+  </button>
+</div>
      <div class="reply-box">
         <input
           id="replyInput"
