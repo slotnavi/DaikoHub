@@ -1784,8 +1784,10 @@ if("Notification" in window &&
 
 loadTickets();
 loadSales();
+
 setInterval(() => {
   loadTickets();
+  loadSales();
 
   const active = document.activeElement;
   const isTyping =
