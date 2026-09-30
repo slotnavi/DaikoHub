@@ -836,6 +836,88 @@ app.post("/api/plans", express.json(), async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+// ===== 料金確定 → Discordへ送信 =====
+app.post("/api/tickets/:id/set-price", async (req, res) => {
+  try {
+    const ticketId = req.params.id;
+    const price = Number(req.body?.price);
+
+    if (!Number.isInteger(price) || price <= 0) {
+      return res.status(400).json({
+        ok: false,
+        error: "正しい料金を入力してください"
+      });
+    }
+
+    const { data: ticket, error } = await supabase
+      .from("tickets")
+      .select("*")
+      .eq("id", ticketId)
+      .single();
+
+    if (error || !ticket) {
+      return res.status(404).json({
+        ok: false,
+        error: "チケットが見つかりません"
+      });
+    }
+
+    if (!ticket.channel_id) {
+      return res.status(400).json({
+        ok: false,
+        error: "Discordチャンネルがありません"
+      });
+    }
+
+    const channel = await client.channels.fetch(ticket.channel_id);
+
+    if (!channel || !channel.isTextBased()) {
+      return res.status(400).json({
+        ok: false,
+        error: "Discordチャンネルが見つかりません"
+      });
+    }
+
+    const text =
+      `料金が確定しました。\n\n` +
+      `💴 **${price.toLocaleString()}円**\n\n` +
+      `お支払いの準備ができましたらお知らせください。`;
+
+    const sent = await channel.send(text);
+
+    await supabase
+      .from("tickets")
+      .update({
+        price,
+        status: "waiting_payment",
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", ticketId);
+
+    await supabase
+      .from("messages")
+      .insert({
+        ticket_id: ticketId,
+        external_message_id: sent.id,
+        sender: "admin",
+        sender_name: "管理者",
+        content: text
+      });
+
+    return res.json({
+      ok: true,
+      price
+    });
+
+  } catch (error) {
+    console.error("Set price error:", error);
+
+    return res.status(500).json({
+      ok: false,
+      error: "料金確定に失敗しました"
+    });
+  }
+});
 // チケット一覧
 app.get("/api/tickets", async (req, res) => {
   try {
