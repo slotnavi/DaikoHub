@@ -1409,15 +1409,18 @@ if("Notification" in window &&
 }
 
 loadTickets();
-setInterval(()=>{
- loadTickets();
- if(selectedId) openTicket(selectedId);
-},3000);
-  setInterval(()=>{
-    loadTickets();
-    if(selectedId) openTicket(selectedId);
-  },3000);
+setInterval(() => {
+  loadTickets();
 
+  const active = document.activeElement;
+  const isTyping =
+    active &&
+    (active.id === "priceInput" || active.id === "replyInput");
+
+  if (selectedId && !isTyping) {
+    openTicket(selectedId);
+  }
+}, 3000);
 async function setPrice(ticketId) {
   const input = document.getElementById("priceInput");
   const price = Number(input.value);
