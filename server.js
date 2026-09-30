@@ -1653,7 +1653,6 @@ async function sendPaymentGuide(ticketId) {
 }
 // ↓ここに追加
 async function sendReply(ticketId) {
-async function sendPaymentGuide(ticketId) {
   const input = document.getElementById("paymentUrlInput");
   const paymentUrl = input.value.trim();
 
