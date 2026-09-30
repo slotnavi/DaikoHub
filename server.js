@@ -1418,7 +1418,44 @@ setInterval(()=>{
     if(selectedId) openTicket(selectedId);
   },3000);
 
+async function setPrice(ticketId) {
+  const input = document.getElementById("priceInput");
+  const price = Number(input.value);
 
+  if (!Number.isInteger(price) || price <= 0) {
+    alert("正しい料金を入力してください");
+    return;
+  }
+
+  if (!confirm(price.toLocaleString() + "円で料金を確定してDiscordへ送信しますか？")) {
+    return;
+  }
+
+  try {
+    const response = await fetch("/api/tickets/" + ticketId + "/set-price", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ price })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error || "料金確定に失敗しました");
+    }
+
+    alert(price.toLocaleString() + "円で料金を確定しました");
+
+    await loadTickets();
+    await openTicket(ticketId);
+
+  } catch (error) {
+    console.error("setPrice error:", error);
+    alert("料金確定に失敗しました: " + error.message);
+  }
+}
 // ↓ここに追加
 async function sendReply(ticketId) {
   const input = document.getElementById("replyInput");
