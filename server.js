@@ -1644,6 +1644,13 @@ async function openTicket(id){
 >
   ✅ 入金確認
 </button>
+
+<button
+  onclick="completeJob('\${t.id}')"
+  style="margin-top:10px;padding:10px 15px;"
+>
+  ✅ 作業完了
+</button>
 </div>
      <div class="reply-box">
         <input
