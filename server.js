@@ -1113,7 +1113,68 @@ app.patch("/api/tickets/:id/status", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+// ===== 入金確認 → 作業開始 =====
+app.post("/api/tickets/:id/payment-confirmed-v2", async (req, res) => {
+  try {
+    const ticketId = req.params.id;
 
+    const { data: ticket, error } = await supabase
+      .from("tickets")
+      .select("*")
+      .eq("id", ticketId)
+      .single();
+
+    if (error || !ticket) {
+      return res.status(404).json({
+        ok: false,
+        error: "チケットが見つかりません"
+      });
+    }
+
+    const channel = await client.channels.fetch(ticket.channel_id);
+
+    if (!channel || !channel.isTextBased()) {
+      return res.status(400).json({
+        ok: false,
+        error: "Discordチャンネルが見つかりません"
+      });
+    }
+
+    const text =
+      "✅ 入金を確認しました。ありがとうございます。\n" +
+      "これより作業を開始します。";
+
+    const sent = await channel.send(text);
+
+    const { error: updateError } = await supabase
+      .from("tickets")
+      .update({
+        status: "working",
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", ticketId);
+
+    if (updateError) throw updateError;
+
+    await supabase.from("messages").insert({
+      ticket_id: ticket.id,
+      external_message_id: sent.id,
+      sender: "admin",
+      sender_name: "管理者",
+      content: text
+    });
+
+    return res.json({ ok: true });
+
+  } catch (error) {
+    console.error("Payment confirmed V2 error:", error);
+
+    return res.status(500).json({
+      ok: false,
+      error: "入金確認に失敗しました"
+    });
+  }
+});
 // 管理画面
 app.get("/admin", (req, res) => {
   res.send(`
