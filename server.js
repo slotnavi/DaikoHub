@@ -1237,6 +1237,60 @@ app.post("/api/tickets/:id/complete-job", async (req, res) => {
     });
   }
 });
+// ===== 売上集計 =====
+app.get("/api/sales", async (req, res) => {
+  try {
+    const { data: tickets, error } = await supabase
+      .from("tickets")
+      .select("price, status, updated_at")
+      .eq("status", "completed");
+
+    if (error) throw error;
+
+    const now = new Date();
+
+    let today = 0;
+    let month = 0;
+    let total = 0;
+
+    for (const ticket of tickets || []) {
+      const price = Number(ticket.price) || 0;
+      const date = new Date(ticket.updated_at);
+
+      total += price;
+
+      if (
+        date.getFullYear() === now.getFullYear() &&
+        date.getMonth() === now.getMonth()
+      ) {
+        month += price;
+      }
+
+      if (
+        date.getFullYear() === now.getFullYear() &&
+        date.getMonth() === now.getMonth() &&
+        date.getDate() === now.getDate()
+      ) {
+        today += price;
+      }
+    }
+
+    return res.json({
+      ok: true,
+      today,
+      month,
+      total
+    });
+
+  } catch (error) {
+    console.error("Sales error:", error);
+
+    return res.status(500).json({
+      ok: false,
+      error: "売上の取得に失敗しました"
+    });
+  }
+});
 // 管理画面
 app.get("/admin", (req, res) => {
   res.send(`
