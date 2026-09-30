@@ -1514,6 +1514,13 @@ async function openTicket(id){
   <button onclick="sendPaymentGuide('\${t.id}')">
     支払い案内を送信
   </button>
+  
+  <button
+  onclick="confirmPayment('\${t.id}')"
+  style="margin-top:10px;padding:10px 15px;"
+>
+  ✅ 入金確認
+</button>
 </div>
      <div class="reply-box">
         <input
