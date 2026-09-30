@@ -1652,6 +1652,35 @@ async function sendPaymentGuide(ticketId) {
   }
 }
 // ↓ここに追加
+async function confirmPayment(ticketId) {
+  if (!confirm("入金確認済みにして、作業を開始しますか？")) {
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      "/api/tickets/" + ticketId + "/payment-confirmed",
+      {
+        method: "POST"
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error || "入金確認に失敗しました");
+    }
+
+    alert("入金を確認しました。作業中に変更しました！");
+
+    await loadTickets();
+    await openTicket(ticketId);
+
+  } catch (error) {
+    console.error("confirmPayment error:", error);
+    alert("入金確認に失敗しました: " + error.message);
+  }
+}
 async function sendReply(ticketId) {
   const input = document.getElementById("paymentUrlInput");
   const paymentUrl = input.value.trim();
