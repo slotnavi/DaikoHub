@@ -1494,9 +1494,12 @@ setInterval(() => {
 
   const active = document.activeElement;
   const isTyping =
-    active &&
-    (active.id === "priceInput" || active.id === "replyInput");
-
+  active &&
+  (
+    active.id === "priceInput" ||
+    active.id === "replyInput" ||
+    active.id === "paymentUrlInput"
+  );
   if (selectedId && !isTyping) {
     openTicket(selectedId);
   }
