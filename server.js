@@ -1722,6 +1722,7 @@ async function sendPaymentGuide(ticketId) {
     alert("送信に失敗しました: " + error.message);
   }
 }
+async function sendReply(ticketId) {
   const input = document.getElementById("replyInput");
   const button = document.getElementById("replyButton");
   const content = input.value.trim();
