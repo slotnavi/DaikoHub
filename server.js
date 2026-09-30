@@ -1720,7 +1720,7 @@ async function confirmPayment(ticketId) {
 
   try {
     const response = await fetch(
-      "/api/tickets/" + ticketId + "/payment-confirmed",
+      "/api/tickets/" + ticketId + "/payment-confirmed-v2",
       {
         method: "POST"
       }
