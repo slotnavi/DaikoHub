@@ -1539,8 +1539,90 @@ async function setPrice(ticketId) {
     alert("料金確定に失敗しました: " + error.message);
   }
 }
+async function sendPaymentGuide(ticketId) {
+  const input = document.getElementById("paymentUrlInput");
+  const paymentUrl = input.value.trim();
+
+  if (!paymentUrl) {
+    alert("支払いURLを入力してください");
+    return;
+  }
+
+  if (!confirm("この支払い案内をDiscordへ送信しますか？")) {
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      "/api/tickets/" + ticketId + "/payment-guide",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ paymentUrl })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error || "送信に失敗しました");
+    }
+
+    alert("支払い案内をDiscordへ送信しました");
+    input.value = "";
+
+    await openTicket(ticketId);
+
+  } catch (error) {
+    console.error("sendPaymentGuide error:", error);
+    alert("送信に失敗しました: " + error.message);
+  }
+}
 // ↓ここに追加
 async function sendReply(ticketId) {
+async function sendPaymentGuide(ticketId) {
+  const input = document.getElementById("paymentUrlInput");
+  const paymentUrl = input.value.trim();
+
+  if (!paymentUrl) {
+    alert("支払いURLを入力してください");
+    return;
+  }
+
+  if (!confirm("この支払い案内をDiscordへ送信しますか？")) {
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      "/api/tickets/" + ticketId + "/payment-guide",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ paymentUrl })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error || "送信に失敗しました");
+    }
+
+    alert("支払い案内をDiscordへ送信しました");
+    input.value = "";
+
+    await openTicket(ticketId);
+
+  } catch (error) {
+    console.error("sendPaymentGuide error:", error);
+    alert("送信に失敗しました: " + error.message);
+  }
+}
   const input = document.getElementById("replyInput");
   const button = document.getElementById("replyButton");
   const content = input.value.trim();
