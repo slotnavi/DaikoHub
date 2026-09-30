@@ -1581,7 +1581,28 @@ function esc(value){
   .replaceAll('"',"&quot;")
   .replaceAll("'","&#039;");
 }
+async function loadSales() {
+  try {
+    const response = await fetch("/api/sales");
+    const data = await response.json();
 
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error || "売上取得に失敗しました");
+    }
+
+    document.getElementById("salesToday").textContent =
+      "¥" + Number(data.today || 0).toLocaleString();
+
+    document.getElementById("salesMonth").textContent =
+      "¥" + Number(data.month || 0).toLocaleString();
+
+    document.getElementById("salesTotal").textContent =
+      "¥" + Number(data.total || 0).toLocaleString();
+
+  } catch (error) {
+    console.error("loadSales error:", error);
+  }
+}
 async function loadTickets(){
  try{
   const r = await fetch("/api/tickets");
