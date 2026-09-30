@@ -1632,6 +1632,41 @@ async function loadSales() {
     console.error("loadSales error:", error);
   }
 }
+async function showSalesHistory() {
+  try {
+    const response = await fetch("/api/sales-history");
+    const data = await response.json();
+
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error || "売上履歴の取得に失敗しました");
+    }
+
+    const sales = data.sales || [];
+
+    if (sales.length === 0) {
+      alert("まだ売上履歴はありません");
+      return;
+    }
+
+    const text = sales.map(sale => {
+      const date = new Date(sale.updated_at).toLocaleString("ja-JP");
+
+      return (
+        "━━━━━━━━━━━━\n" +
+        "👤 " + (sale.username || "不明") + "\n" +
+        "🎮 " + (sale.service || "依頼") + "\n" +
+        "💴 ¥" + Number(sale.price || 0).toLocaleString() + "\n" +
+        "📅 " + date
+      );
+    }).join("\n\n");
+
+    alert("📊 売上履歴\n\n" + text);
+
+  } catch (error) {
+    console.error("showSalesHistory error:", error);
+    alert("売上履歴の取得に失敗しました: " + error.message);
+  }
+}
 async function loadTickets(){
  try{
   const r = await fetch("/api/tickets");
