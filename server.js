@@ -1652,15 +1652,15 @@ async function showSalesHistory() {
       const date = new Date(sale.updated_at).toLocaleString("ja-JP");
 
       return (
-       "--------------------\n" +
-        "👤 " + (sale.username || "不明") + "\n" +
-        "🎮 " + (sale.service || "依頼") + "\n" +
-        "💴 ¥" + Number(sale.price || 0).toLocaleString() + "\n" +
+        "--------------------\\n" +
+        "👤 " + (sale.username || "不明") + "\\n" +
+        "🎮 " + (sale.service || "依頼") + "\\n" +
+        "💴 ¥" + Number(sale.price || 0).toLocaleString() + "\\n" +
         "📅 " + date
       );
-    }).join("\n\n");
+    }).join("\\n\\n");
 
-    alert("📊 売上履歴\n\n" + text);
+    alert("📊 売上履歴\\n\\n" + text);
 
   } catch (error) {
     console.error("showSalesHistory error:", error);
