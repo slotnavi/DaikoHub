@@ -1783,6 +1783,7 @@ if("Notification" in window &&
 }
 
 loadTickets();
+loadSales();
 setInterval(() => {
   loadTickets();
 
