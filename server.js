@@ -1411,7 +1411,28 @@ select{
  <div class="logo">⚡ DaikoHub</div>
  <div class="live">● LIVE</div>
 </header>
+<div id="salesSummary" style="
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  padding:12px 18px;
+  background:#0b0d12;
+">
+  <div class="stat">
+    今日の売上
+    <b id="salesToday">¥0</b>
+  </div>
 
+  <div class="stat">
+    今月の売上
+    <b id="salesMonth">¥0</b>
+  </div>
+
+  <div class="stat">
+    累計売上
+    <b id="salesTotal">¥0</b>
+  </div>
+</div>
 <main>
  <section class="sidebar">
    <div class="stats">
