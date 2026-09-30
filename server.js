@@ -1681,7 +1681,7 @@ async function confirmPayment(ticketId) {
     alert("入金確認に失敗しました: " + error.message);
   }
 }
-async function sendReply(ticketId) {
+async function sendPaymentGuide(ticketId) {
   const input = document.getElementById("paymentUrlInput");
   const paymentUrl = input.value.trim();
 
