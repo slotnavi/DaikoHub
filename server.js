@@ -1652,7 +1652,7 @@ async function showSalesHistory() {
       const date = new Date(sale.updated_at).toLocaleString("ja-JP");
 
       return (
-        "━━━━━━━━━━━━\n" +
+       "--------------------\n" +
         "👤 " + (sale.username || "不明") + "\n" +
         "🎮 " + (sale.service || "依頼") + "\n" +
         "💴 ¥" + Number(sale.price || 0).toLocaleString() + "\n" +
