@@ -1291,6 +1291,31 @@ app.get("/api/sales", async (req, res) => {
     });
   }
 });
+// ===== 売上履歴 =====
+app.get("/api/sales-history", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("tickets")
+      .select("id, username, platform, service, price, updated_at")
+      .eq("status", "completed")
+      .order("updated_at", { ascending: false });
+
+    if (error) throw error;
+
+    return res.json({
+      ok: true,
+      sales: data || []
+    });
+
+  } catch (error) {
+    console.error("Sales history error:", error);
+
+    return res.status(500).json({
+      ok: false,
+      error: "売上履歴の取得に失敗しました"
+    });
+  }
+});
 // 管理画面
 app.get("/admin", (req, res) => {
   res.send(`
