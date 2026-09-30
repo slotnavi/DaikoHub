@@ -1470,6 +1470,10 @@ select{
    <button class="settings-btn" onclick="showPlanSettings()">
      ⚙️ プラン設定
 </button>
+
+<button class="settings-btn" onclick="showSalesHistory()">
+  📊 売上履歴
+</button>
  </section>
 
  <section class="content" id="content">
