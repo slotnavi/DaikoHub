@@ -918,6 +918,72 @@ app.post("/api/tickets/:id/set-price", async (req, res) => {
     });
   }
 });
+// ===== 支払い案内 → Discordへ送信 =====
+app.post("/api/tickets/:id/payment-guide", async (req, res) => {
+  try {
+    const ticketId = req.params.id;
+    const paymentUrl = req.body?.paymentUrl?.trim();
+
+    if (!paymentUrl) {
+      return res.status(400).json({
+        ok: false,
+        error: "支払いURLを入力してください"
+      });
+    }
+
+    const { data: ticket, error } = await supabase
+      .from("tickets")
+      .select("*")
+      .eq("id", ticketId)
+      .single();
+
+    if (error || !ticket) {
+      return res.status(404).json({
+        ok: false,
+        error: "チケットが見つかりません"
+      });
+    }
+
+    const channel = await client.channels.fetch(ticket.channel_id);
+
+    if (!channel || !channel.isTextBased()) {
+      return res.status(400).json({
+        ok: false,
+        error: "Discordチャンネルが見つかりません"
+      });
+    }
+
+    const priceText = ticket.price
+      ? `料金：${Number(ticket.price).toLocaleString()}円\n\n`
+      : "";
+
+    const text =
+      `お支払いはこちらからお願いします。\n\n` +
+      priceText +
+      `${paymentUrl}\n\n` +
+      `お支払いが完了しましたら、このチャンネルでお知らせください。`;
+
+    const sent = await channel.send(text);
+
+    await supabase.from("messages").insert({
+      ticket_id: ticket.id,
+      external_message_id: sent.id,
+      sender: "admin",
+      sender_name: "管理者",
+      content: text
+    });
+
+    return res.json({ ok: true });
+
+  } catch (error) {
+    console.error("Payment guide error:", error);
+
+    return res.status(500).json({
+      ok: false,
+      error: "支払い案内の送信に失敗しました"
+    });
+  }
+});
 // チケット一覧
 app.get("/api/tickets", async (req, res) => {
   try {
