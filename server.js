@@ -1356,6 +1356,24 @@ async function openTicket(id){
    \`).join("") :
    '<div class="empty">まだメッセージがありません</div>'}
   </div>
+  <div style="margin-top:20px;padding:15px;background:#151923;border-radius:10px;">
+  <div style="font-weight:bold;margin-bottom:10px;">💴 料金設定</div>
+
+  <div style="display:flex;gap:8px;">
+    <input
+      id="priceInput"
+      type="number"
+      min="1"
+      placeholder="例：1000"
+      value="\${t.price || ""}"
+      style="flex:1;padding:10px;border-radius:8px;border:1px solid #343a49;"
+    >
+
+    <button onclick="setPrice('\${t.id}')">
+      料金確定
+    </button>
+  </div>
+</div>
      <div class="reply-box">
         <input
           id="replyInput"
