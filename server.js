@@ -1811,6 +1811,35 @@ async function confirmPayment(ticketId) {
     alert("入金確認に失敗しました: " + error.message);
   }
 }
+async function completeJob(ticketId) {
+  if (!confirm("この依頼を作業完了にしますか？")) {
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      "/api/tickets/" + ticketId + "/complete-job",
+      {
+        method: "POST"
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error || "作業完了に失敗しました");
+    }
+
+    alert("作業完了に変更しました！");
+
+    await loadTickets();
+    await openTicket(ticketId);
+
+  } catch (error) {
+    console.error("completeJob error:", error);
+    alert("作業完了に失敗しました: " + error.message);
+  }
+}
 async function sendPaymentGuide(ticketId) {
   const input = document.getElementById("paymentUrlInput");
   const paymentUrl = input.value.trim();
