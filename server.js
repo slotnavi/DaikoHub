@@ -626,7 +626,7 @@ const complete = basicInfoComplete;
     content: finalMessage
   });
 
-  console.log("[PLAN SELECTION START]", ticket.id);
+  console.log("[INTAKE COMPLETE]", ticket.id);
           // ===== 受付完了 → 料金確認待ち =====
 const { error: waitingPriceError } = await supabase
   .from("tickets")
