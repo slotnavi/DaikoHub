@@ -1206,8 +1206,7 @@ app.post("/api/tickets/:id/complete-job", async (req, res) => {
       });
     }
 
-    const channel = await client.channels.fetch(ticket.channel_id);
-
+   const channel = await client.channels.fetch(ticket.channel_id);
     if (!channel || !channel.isTextBased()) {
       return res.status(400).json({
         ok: false,
