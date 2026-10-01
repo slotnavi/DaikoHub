@@ -601,21 +601,20 @@ const complete = basicInfoComplete;
 
   let finalMessage;
 
-  if (plans && plans.length > 0) {
-    const planText = plans.map((plan, index) => {
-      return `${index + 1}. ${plan.name}\n${plan.description || ""}`;
-    }).join("\n\n");
-
-    finalMessage =
-      "ありがとうございます！依頼内容を確認しました。\n\n" +
-      "ご希望のプランを選んでください👇\n\n" +
-      planText +
-      "\n\n希望するプラン名、または番号を送ってください。";
-  } else {
-    finalMessage =
-      "ありがとうございます！依頼内容を確認しました。\n" +
-      "スタッフが料金を確認しますので、少々お待ちください。";
-  }
+  if (plans && plans.length === 1) {
+  finalMessage =
+    "ありがとうございます！依頼内容を確認しました。\n" +
+    `プランは「${plans[0].name}」で受付しました。\n` +
+    "スタッフが料金を確認しますので、少々お待ちください。";
+} else if (plans && plans.length > 1) {
+  finalMessage =
+    "ありがとうございます！依頼内容を確認しました。\n" +
+    "スタッフが内容に合ったプランを確認しますので、少々お待ちください。";
+} else {
+  finalMessage =
+    "ありがとうございます！依頼内容を確認しました。\n" +
+    "スタッフが料金を確認しますので、少々お待ちください。";
+}
 
   await message.reply(finalMessage);
 
