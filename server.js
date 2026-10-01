@@ -1707,6 +1707,20 @@ async function loadTickets(){
 
   const data = await r.json();
 
+  const priority = {
+  new: 1,
+  ai_intake: 2,
+  waiting_price: 3,
+  waiting_payment: 4,
+  working: 5,
+  waiting: 6,
+  completed: 99
+};
+
+data.sort((a, b) =>
+  (priority[a.status] ?? 50) - (priority[b.status] ?? 50)
+);
+
   document.getElementById("count").textContent = data.length;
   document.getElementById("working").textContent =
     data.filter(x=>x.status==="working").length;
