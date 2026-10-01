@@ -303,9 +303,7 @@ app.post("/api/tickets/:id/payment-confirmed", async (req, res) => {
   await interaction.deferReply({
     ephemeral: true
   });
-    await interaction.deferReply({
-      ephemeral: true
-    });
+    
 
     const guild = interaction.guild;
     const user = interaction.user;
