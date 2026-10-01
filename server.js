@@ -386,10 +386,12 @@ app.post("/api/tickets/:id/payment-confirmed", async (req, res) => {
 
       await channel.send({
         content:
-          `ようこそ <@${user.id}> さん！\n\n` +
-          "🎮 **ぷにぷに代行受付です。**\n\n" +
-          "ここから必要な内容を順番に確認します。\n\n" +
-          "まずは、**今回お願いしたい代行内容**を自由に送ってください！",
+  `ようこそ <@${user.id}> さん！\n\n` +
+  `📦 ご依頼内容：**${panelName}**\n\n` +
+  "🎫 ぷにぷに代行受付です。\n\n" +
+  "ここから必要な内容を順番に確認します。\n\n" +
+  "まずは、本日何時頃までに代行内容を終わらせてください！",
+components: [closeRow]
         components: [closeRow]
       });
 
