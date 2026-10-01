@@ -1678,27 +1678,25 @@ async function showCompletedTickets() {
 
     const data = await r.json();
     const completed = data.filter(t => t.status === "completed");
-
     const content = document.getElementById("content");
 
     if (!completed.length) {
-      content.innerHTML =
-        '<div class="empty">完了済みの依頼はありません</div>';
+      content.innerHTML = '<div class="empty">完了済みの依頼はありません</div>';
       return;
     }
 
-    content.innerHTML =
-      '<h2>✅ 完了済みの依頼</h2>' +
-      completed.map(t => `
-        <div class="card" style="margin-bottom:12px;">
-          <b>👤 \${esc(t.username || "Unknown")}</b><br>
-          📦 \${esc(t.service || "依頼")}<br>
-          💴 ¥\${Number(t.price || 0).toLocaleString()}<br>
-          <button onclick="openTicket('\${t.id}')">
-            詳細を見る
-          </button>
-        </div>
-      `).join("");
+    let html = '<h2>✅ 完了済みの依頼</h2>';
+
+    completed.forEach(t => {
+      html += '<div class="card" style="margin-bottom:12px;">';
+      html += '<b>👤 ' + esc(t.username || "Unknown") + '</b><br>';
+      html += '📦 ' + esc(t.service || "依頼") + '<br>';
+      html += '💴 ¥' + Number(t.price || 0).toLocaleString() + '<br>';
+      html += '<button onclick="openTicket(\\'' + t.id + '\\')">詳細を見る</button>';
+      html += '</div>';
+    });
+
+    content.innerHTML = html;
   } catch (e) {
     console.error("showCompletedTickets error:", e);
     alert("完了済み依頼の取得に失敗しました");
