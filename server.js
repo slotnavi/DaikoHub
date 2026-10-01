@@ -1994,6 +1994,18 @@ if("Notification" in window &&
 loadTickets();
 loadSales();
 
+setInterval(() => {
+  if (window.completedViewOpen) return;
+
+  loadTickets();
+
+  if (selectedId) {
+    openTicket(selectedId);
+  }
+
+  loadSales();
+}, 3000);
+
 async function setPrice(ticketId) {
   const input = document.getElementById("priceInput");
   const price = Number(input.value);
