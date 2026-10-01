@@ -1205,9 +1205,12 @@ app.post("/api/tickets/:id/complete-job", async (req, res) => {
     }
 
     const text =
-      "✅ 作業が完了しました！\n" +
-      "ご依頼ありがとうございました。";
-
+  "✅ **代行作業が完了しました！**\n\n" +
+  "ご依頼ありがとうございました！\n" +
+  "これよりゲームへログインしていただいて大丈夫です。\n\n" +
+  "📱 内容をご確認いただき、何か問題がありましたらこのチケットでお知らせください。\n\n" +
+  "またのご依頼をお待ちしております！";
+    
     const sent = await channel.send(text);
 
     const { error: updateError } = await supabase
