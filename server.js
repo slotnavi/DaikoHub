@@ -1994,24 +1994,18 @@ if("Notification" in window &&
 loadTickets();
 loadSales();
 
-setInterval(() => {
+setInterval(async () => {
   if (!window.completedViewOpen) {
-    loadTickets();
+    await loadTickets();
   }
-  loadSales();
 
-  const active = document.activeElement;
-  const isTyping =
-  active &&
-  (
-    active.id === "priceInput" ||
-    active.id === "replyInput" ||
-    active.id === "paymentUrlInput"
-  );
-  if (selectedId && !isTyping) {
-    openTicket(selectedId);
+  await loadSales();
+
+  if (selectedId && !window.completedViewOpen) {
+    await openTicket(selectedId);
   }
 }, 3000);
+
 async function setPrice(ticketId) {
   const input = document.getElementById("priceInput");
   const price = Number(input.value);
