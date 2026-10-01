@@ -443,7 +443,12 @@ if (!ticket) return;
 
 console.log("[TICKET STATUS]", ticket.id, ticket.status);
 
-if (ticket.status === "working" || ticket.status === "completed") {
+if (
+  ticket.status === "waiting_price" ||
+  ticket.status === "waiting_payment" ||
+  ticket.status === "working" ||
+  ticket.status === "completed"
+) {
   await message.reply(
     "ありがとうございます！内容を確認いたしました。\n" +
     "スタッフが確認しますので、少々お待ちください。"
