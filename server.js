@@ -1784,7 +1784,7 @@ async function loadTickets(){
       });
     }
   }
-
+  
   previousIds=currentIds;
 
  }catch(e){
