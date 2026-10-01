@@ -187,143 +187,80 @@ client.once("ready", async () => {
 });
 
 client.on("interactionCreate", async (interaction) => {
+  try {
+    // ========================
+    // /panel
+    // ========================
+    if (interaction.isChatInputCommand()) {
+      if (interaction.commandName !== "panel") return;
 
-  // ========================
-  // /panel
-  // ========================
-  if (interaction.isChatInputCommand()) {
+      if (
+        !interaction.member.permissions.has(
+          PermissionFlagsBits.Administrator
+        )
+      ) {
+        await interaction.reply({
+          content: "このコマンドは管理者専用です。",
+          ephemeral: true
+        });
+        return;
+      }
 
-    if (interaction.commandName !== "panel") return;
+      const panelName = interaction.options.getString("name");
 
+      const embed = new EmbedBuilder()
+        .setTitle(panelName)
+        .setDescription(
+          "代行をご希望の方は下のボタンを押してください。\n\n" +
+          "あなた専用の受付チャンネルを自動で作成します。"
+        );
+
+      const row = new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+          .setCustomId(`create_ticket:${panelName}`)
+          .setLabel("🎫 チケットを作成")
+          .setStyle(ButtonStyle.Primary)
+      );
+
+      await interaction.reply({
+        embeds: [embed],
+        components: [row]
+      });
+
+      return;
+    }
+
+    // ========================
+    // チケット作成
+    // ========================
     if (
-      !interaction.member.permissions.has(
-        PermissionFlagsBits.Administrator
-      )
+      interaction.isButton() &&
+      interaction.customId.startsWith("create_ticket:")
     ) {
-      return interaction.reply({
-        content: "このコマンドは管理者専用です。",
+      const panelName =
+        interaction.customId.slice("create_ticket:".length);
+
+      await interaction.deferReply({
         ephemeral: true
       });
-    }
 
-    const panelName = interaction.options.getString("name");
+      const guild = interaction.guild;
+      const user = interaction.user;
 
-const embed = new EmbedBuilder()
-  .setTitle(panelName)
-      .setDescription(
-        "代行をご希望の方は下のボタンを押してください。\n\n" +
-        "あなた専用の受付チャンネルを自動で作成します。"
+      const existing = guild.channels.cache.find(
+        ch => ch.topic === `daikohub:${user.id}`
       );
 
-    const row = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setCustomId(`create_ticket:${panelName}`)
-        .setLabel("🎫 チケットを作成")
-        .setStyle(ButtonStyle.Primary)
-    );
-
-    await interaction.reply({
-      embeds: [embed],
-      components: [row]
-    });
-
-    return;
-  }
-// ===== 入金確認 → 作業開始 =====
-app.post("/api/tickets/:id/payment-confirmed", async (req, res) => {
-  try {
-    const ticketId = req.params.id;
-
-    const { data: ticket, error } = await supabase
-      .from("tickets")
-      .select("*")
-      .eq("id", ticketId)
-      .single();
-
-    if (error || !ticket) {
-      return res.status(404).json({
-        ok: false,
-        error: "チケットが見つかりません"
-      });
-    }
-
-    const channel = await client.channels.fetch(ticket.channel_id);
-
-    if (!channel || !channel.isTextBased()) {
-      return res.status(400).json({
-        ok: false,
-        error: "Discordチャンネルが見つかりません"
-      });
-    }
-
-    const text =
-      "✅ 入金を確認しました。ありがとうございます。\n" +
-      "これより作業を開始します。";
-
-    const sent = await channel.send(text);
-
-    const { error: updateError } = await supabase
-      .from("tickets")
-      .update({
-        status: "working",
-        updated_at: new Date().toISOString()
-      })
-      .eq("id", ticketId);
-
-    if (updateError) throw updateError;
-
-    await supabase.from("messages").insert({
-      ticket_id: ticket.id,
-      external_message_id: sent.id,
-      sender: "admin",
-      sender_name: "管理者",
-      content: text
-    });
-
-    return res.json({ ok: true });
-
-  } catch (error) {
-    console.error("Payment confirmed error:", error);
-
-    return res.status(500).json({
-      ok: false,
-      error: "入金確認に失敗しました"
-    });
-  }
-});
-  // ========================
-  // チケット作成
-  // ========================
- if (
-  interaction.isButton() &&
-  interaction.customId.startsWith("create_ticket:")
-) {
-  const panelName = interaction.customId.slice("create_ticket:".length);
-
-  await interaction.deferReply({
-    ephemeral: true
-  });
-    
-
-    const guild = interaction.guild;
-    const user = interaction.user;
-
-    const existing = guild.channels.cache.find(
-      ch => ch.topic === `daikohub:${user.id}`
-    );
-
-    if (existing) {
-      return interaction.editReply(
-        `すでにチケットがあります → ${existing}`
-      );
-    }
-
-    try {
+      if (existing) {
+        await interaction.editReply(
+          `すでにチケットがあります → ${existing}`
+        );
+        return;
+      }
 
       const channel = await guild.channels.create({
         name: `依頼-${user.username}`,
         type: ChannelType.GuildText,
-
         topic: `daikohub:${user.id}`,
 
         permissionOverwrites: [
@@ -331,7 +268,6 @@ app.post("/api/tickets/:id/payment-confirmed", async (req, res) => {
             id: guild.roles.everyone.id,
             deny: [PermissionFlagsBits.ViewChannel]
           },
-
           {
             id: user.id,
             allow: [
@@ -340,7 +276,6 @@ app.post("/api/tickets/:id/payment-confirmed", async (req, res) => {
               PermissionFlagsBits.ReadMessageHistory
             ]
           },
-
           {
             id: client.user.id,
             allow: [
@@ -353,7 +288,6 @@ app.post("/api/tickets/:id/payment-confirmed", async (req, res) => {
         ]
       });
 
-      // Supabaseへチケット保存
       const { data: ticket, error } = await supabase
         .from("tickets")
         .insert({
@@ -361,7 +295,7 @@ app.post("/api/tickets/:id/payment-confirmed", async (req, res) => {
           external_user_id: user.id,
           username: user.username,
           channel_id: channel.id,
-          status: "受付中",
+          status: "new",
           service: panelName,
           ai_enabled: true
         })
@@ -370,83 +304,97 @@ app.post("/api/tickets/:id/payment-confirmed", async (req, res) => {
 
       if (error) {
         console.error("Ticket DB error:", error);
-      } else {
-        console.log(
-          `[NEW TICKET] DB ID ${ticket.id} / ${user.username}`
-        );
+        throw error;
       }
 
-      const closeRow =
-        new ActionRowBuilder().addComponents(
-          new ButtonBuilder()
-            .setCustomId("close_ticket")
-            .setLabel("🔒 チケットを閉じる")
-            .setStyle(ButtonStyle.Danger)
-        );
+      console.log(
+        `[NEW TICKET] DB ID ${ticket.id} / ${user.username}`
+      );
+
+      const closeRow = new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+          .setCustomId("close_ticket")
+          .setLabel("🔒 チケットを閉じる")
+          .setStyle(ButtonStyle.Danger)
+      );
 
       await channel.send({
         content:
-  `ようこそ <@${user.id}> さん！\n\n` +
-  `📦 ご依頼内容：**${panelName}**\n\n` +
-  "🎫 ぷにぷに代行受付です。\n\n" +
-  "ここから必要な内容を順番に確認します。\n\n" +
-  "まずは、本日何時頃までに代行内容を終わらせてください！",
-components: [closeRow]      
+          `ようこそ <@${user.id}> さん！\n\n` +
+          `📦 ご依頼内容：**${panelName}**\n\n` +
+          "🎫 ぷにぷに代行受付です。\n\n" +
+          "ここから必要な内容を順番に確認します。\n\n" +
+          "まずは、本日何時頃までに代行内容を終わらせてください！",
+        components: [closeRow]
       });
 
       await interaction.editReply(
         `✅ チケットを作成しました → ${channel}`
       );
 
-    } catch (error) {
-
-      console.error("Ticket creation error:", error);
-
-      await interaction.editReply(
-        "❌ チケット作成中にエラーが発生しました。"
-      );
-    }
-
-    return;
-  }
-
-  // ========================
-  // チケットを閉じる
-  // ========================
-  if (
-    interaction.isButton() &&
-    interaction.customId === "close_ticket"
-  ) {
-
-    const channel = interaction.channel;
-
-    if (!channel.topic?.startsWith("daikohub:")) {
       return;
     }
 
-    await interaction.reply(
-      "🔒 チケットを閉じます..."
-    );
+    // ========================
+    // チケットを閉じる
+    // ========================
+    if (
+      interaction.isButton() &&
+      interaction.customId === "close_ticket"
+    ) {
+      const channel = interaction.channel;
 
-    await supabase
-      .from("tickets")
-      .update({
-        status: "完了",
-        updated_at: new Date().toISOString()
-      })
-      .eq("channel_id", channel.id);
-
-    setTimeout(async () => {
-
-      try {
-        await channel.delete();
-      } catch (error) {
-        console.error(error);
+      if (!channel.topic?.startsWith("daikohub:")) {
+        await interaction.reply({
+          content: "このチャンネルはチケットではありません。",
+          ephemeral: true
+        });
+        return;
       }
 
-    }, 2000);
+      await interaction.reply(
+        "🔒 チケットを閉じます..."
+      );
+
+      await supabase
+        .from("tickets")
+        .update({
+          status: "completed",
+          updated_at: new Date().toISOString()
+        })
+        .eq("channel_id", channel.id);
+
+      setTimeout(async () => {
+        try {
+          await channel.delete();
+        } catch (error) {
+          console.error("Channel delete error:", error);
+        }
+      }, 2000);
+
+      return;
+    }
+
+  } catch (error) {
+    console.error("[INTERACTION ERROR]", error);
+
+    try {
+      if (interaction.deferred || interaction.replied) {
+        await interaction.editReply(
+          "❌ 処理中にエラーが発生しました。"
+        );
+      } else {
+        await interaction.reply({
+          content: "❌ 処理中にエラーが発生しました。",
+          ephemeral: true
+        });
+      }
+    } catch (replyError) {
+      console.error("[INTERACTION REPLY ERROR]", replyError);
+    }
   }
 });
+
 
 // ========================
 // 客からのメッセージ保存
