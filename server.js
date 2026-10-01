@@ -393,8 +393,7 @@ app.post("/api/tickets/:id/payment-confirmed", async (req, res) => {
   "🎫 ぷにぷに代行受付です。\n\n" +
   "ここから必要な内容を順番に確認します。\n\n" +
   "まずは、本日何時頃までに代行内容を終わらせてください！",
-components: [closeRow]
-        components: [closeRow]
+components: [closeRow]      
       });
 
       await interaction.editReply(
