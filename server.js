@@ -1792,6 +1792,7 @@ async function loadTickets(){
   document.getElementById("tickets").innerHTML =
     '<div class="empty">エラー: ' + String(e.message || e) + '</div>';
 }
+}
 async function openTicket(id){
  selectedId=id;
  document.body.classList.add("open");
