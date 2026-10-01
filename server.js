@@ -1995,15 +1995,28 @@ loadTickets();
 loadSales();
 
 setInterval(async () => {
-  if (!window.completedViewOpen) {
-    await loadTickets();
+  if (window.completedViewOpen) return;
+
+  await loadTickets();
+
+  if (selectedId) {
+    const mr = await fetch("/api/tickets/" + selectedId + "/messages?_=" + Date.now());
+    const messages = await mr.json();
+
+    const box = document.querySelector(".messages");
+    if (box) {
+      box.innerHTML = messages.length
+        ? messages.map(m => `
+            <div class="message ${m.sender === "bot" ? "bot" : ""}">
+              <div class="sender">${esc(m.sender_name || m.sender)}</div>
+              <div>${esc(m.content)}</div>
+            </div>
+          `).join("")
+        : '<div class="empty">まだメッセージがありません</div>';
+    }
   }
 
   await loadSales();
-
-  if (selectedId && !window.completedViewOpen) {
-    await openTicket(selectedId);
-  }
 }, 3000);
 
 async function setPrice(ticketId) {
