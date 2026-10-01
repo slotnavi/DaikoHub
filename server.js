@@ -207,7 +207,9 @@ client.on("interactionCreate", async (interaction) => {
     }
 
     const panelName = interaction.options.getString("name");
-      .setTitle(panelName)
+
+const embed = new EmbedBuilder()
+  .setTitle(panelName)
       .setDescription(
         "代行をご希望の方は下のボタンを押してください。\n\n" +
         "あなた専用の受付チャンネルを自動で作成します。"
