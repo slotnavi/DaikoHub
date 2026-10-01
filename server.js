@@ -568,13 +568,8 @@ deadline:
   newDetails.deadline
 );
 
-const noMoreRequests =
-  /特にない|特になし|ないです|ありません|大丈夫です|ないよ|なし/i.test(
-    message.content
-  );
-
-const complete = basicInfoComplete && noMoreRequests;
-
+const complete = basicInfoComplete;
+    
       const { error: updateError } = await supabase
         .from("tickets")
         .update({
