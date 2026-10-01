@@ -2192,9 +2192,5 @@ async function sendReply(ticketId) {
 </script>
 </body>
 </html>
-</script>
-
-</body>
-</html>
   `);
 });
