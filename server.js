@@ -1670,6 +1670,41 @@ async function loadSales() {
     console.error("loadSales error:", error);
   }
 }
+
+async function showCompletedTickets() {
+  try {
+    const r = await fetch("/api/tickets");
+    if (!r.ok) throw new Error("HTTP " + r.status);
+
+    const data = await r.json();
+    const completed = data.filter(t => t.status === "completed");
+
+    const content = document.getElementById("content");
+
+    if (!completed.length) {
+      content.innerHTML =
+        '<div class="empty">完了済みの依頼はありません</div>';
+      return;
+    }
+
+    content.innerHTML =
+      '<h2>✅ 完了済みの依頼</h2>' +
+      completed.map(t => `
+        <div class="card" style="margin-bottom:12px;">
+          <b>👤 \${esc(t.username || "Unknown")}</b><br>
+          📦 \${esc(t.service || "依頼")}<br>
+          💴 ¥\${Number(t.price || 0).toLocaleString()}<br>
+          <button onclick="openTicket('\${t.id}')">
+            詳細を見る
+          </button>
+        </div>
+      `).join("");
+  } catch (e) {
+    console.error("showCompletedTickets error:", e);
+    alert("完了済み依頼の取得に失敗しました");
+  }
+}
+
 async function showSalesHistory() {
   try {
     const response = await fetch("/api/sales-history");
