@@ -2081,6 +2081,34 @@ async function completeJob(ticketId) {
     alert("作業完了に失敗しました: " + error.message);
   }
 }
+
+async function deleteTicket(ticketId) {
+  if (!confirm("この依頼を完全に削除しますか？\nDiscordチャンネルも削除されます。")) {
+    return;
+  }
+
+  try {
+    const response = await fetch("/api/tickets/" + ticketId, {
+      method: "DELETE"
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error || "削除に失敗しました");
+    }
+
+    alert("削除しました！");
+
+    selectedId = null;
+    await loadTickets();
+
+  } catch (error) {
+    console.error("deleteTicket error:", error);
+    alert("削除に失敗しました: " + error.message);
+  }
+}
+
 async function sendPaymentGuide(ticketId) {
   const input = document.getElementById("paymentUrlInput");
   const paymentUrl = input.value.trim();
