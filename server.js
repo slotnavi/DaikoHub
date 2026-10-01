@@ -362,6 +362,7 @@ app.post("/api/tickets/:id/payment-confirmed", async (req, res) => {
           username: user.username,
           channel_id: channel.id,
           status: "受付中",
+          service: panelName,
           ai_enabled: true
         })
         .select()
