@@ -166,13 +166,20 @@ client.once("ready", async () => {
   console.log(`Discord Bot ready: ${client.user.tag}`);
 
   try {
-    await client.application.commands.set([
+   await client.application.commands.set([
+  {
+    name: "panel",
+    description: "代行受付パネルを設置します",
+    options: [
       {
-        name: "panel",
-        description: "代行受付パネルを設置します"
+        name: "name",
+        description: "パネルに表示する商品名・料金を入力してください",
+        type: 3,
+        required: true
       }
-    ]);
-
+    ]
+  }
+]);
     console.log("/panel command registered");
   } catch (error) {
     console.error("Command registration error:", error);
