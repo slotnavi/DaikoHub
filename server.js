@@ -1507,6 +1507,11 @@ select{
 <button class="settings-btn" onclick="showSalesHistory()">
   📊 売上履歴
 </button>
+
+<button class="settings-btn" onclick="showCompletedTickets()">
+  ✅ 完了済み
+</button>
+
  </section>
 
  <section class="content" id="content">
