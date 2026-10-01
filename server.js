@@ -2084,7 +2084,7 @@ async function completeJob(ticketId) {
 }
 
 async function deleteTicket(ticketId) {
-  if (!confirm("この依頼を完全に削除しますか？\nDiscordチャンネルも削除されます。")) {
+  if (!confirm("この依頼を完全に削除しますか？\\nDiscordチャンネルも削除されます。")) {
     return;
   }
 
