@@ -320,12 +320,12 @@ client.on("interactionCreate", async (interaction) => {
 
       await channel.send({
         content:
-          `ようこそ <@${user.id}> さん！\n\n` +
-          `📦 ご依頼内容：**${panelName}**\n\n` +
-          "🎫 ぷにぷに代行受付です。\n\n" +
-          "ここから必要な内容を順番に確認します。\n\n" +
-          "まずは、本日何時頃までに代行内容を終わらせてください！",
-        components: [closeRow]
+  `ようこそ <@${user.id}> さん！\n\n` +
+  `📦 ご依頼内容：**${panelName}**\n\n` +
+  "ご依頼ありがとうございます！\n" +
+  "ここから必要な内容を順番に確認します。\n\n" +
+  "⏰ まず、いつまでに完了希望か教えてください！",
+components: [closeRow]
       });
 
       await interaction.editReply(
