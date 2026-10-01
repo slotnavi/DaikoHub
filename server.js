@@ -206,8 +206,8 @@ client.on("interactionCreate", async (interaction) => {
       });
     }
 
-    const embed = new EmbedBuilder()
-      .setTitle("🎮 ぷにぷに代行受付")
+    const panelName = interaction.options.getString("name");
+      .setTitle(panelName)
       .setDescription(
         "代行をご希望の方は下のボタンを押してください。\n\n" +
         "あなた専用の受付チャンネルを自動で作成します。"
@@ -215,7 +215,7 @@ client.on("interactionCreate", async (interaction) => {
 
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
-        .setCustomId("create_ticket")
+        .setCustomId(`create_ticket:${panelName}`)
         .setLabel("🎫 チケットを作成")
         .setStyle(ButtonStyle.Primary)
     );
@@ -292,11 +292,15 @@ app.post("/api/tickets/:id/payment-confirmed", async (req, res) => {
   // ========================
   // チケット作成
   // ========================
-  if (
-    interaction.isButton() &&
-    interaction.customId === "create_ticket"
-  ) {
+ if (
+  interaction.isButton() &&
+  interaction.customId.startsWith("create_ticket:")
+) {
+  const panelName = interaction.customId.slice("create_ticket:".length);
 
+  await interaction.deferReply({
+    ephemeral: true
+  });
     await interaction.deferReply({
       ephemeral: true
     });
