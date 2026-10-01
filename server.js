@@ -439,6 +439,14 @@ client.on("messageCreate", async (message) => {
     return;
   }
 
+if (ticket && (ticket.status === "working" || ticket.status === "completed")) {
+  await message.reply(
+    "ありがとうございます！内容を確認いたしました。\n" +
+    "スタッフが確認しますので、少々お待ちください。"
+  );
+  return;
+}
+  
   if (!ticket) return;
 // ===== 登録プランを取得 =====
 const { data: activePlans, error: plansError } = await supabase
