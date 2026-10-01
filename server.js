@@ -1788,10 +1788,10 @@ async function loadTickets(){
   previousIds=currentIds;
 
  }catch(e){
-  console.error(e);
- }
+  console.error("loadTickets error:", e);
+  document.getElementById("tickets").innerHTML =
+    '<div class="empty">エラー: ' + String(e.message || e) + '</div>';
 }
-
 async function openTicket(id){
  selectedId=id;
  document.body.classList.add("open");
