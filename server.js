@@ -1946,7 +1946,9 @@ loadTickets();
 loadSales();
 
 setInterval(() => {
-  loadTickets();
+  if (!window.completedViewOpen) {
+    loadTickets();
+  }
   loadSales();
 
   const active = document.activeElement;
