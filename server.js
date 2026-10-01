@@ -328,6 +328,21 @@ client.on("interactionCreate", async (interaction) => {
 components: [closeRow]
       });
 
+const notifyChannelId = process.env.ADMIN_NOTIFY_CHANNEL_ID;
+
+if (notifyChannelId) {
+  const notifyChannel = await client.channels.fetch(notifyChannelId);
+
+  if (notifyChannel) {
+    await notifyChannel.send(
+      `🔔 **新しい依頼が入りました！**\n\n` +
+      `👤 お客様：${user.username}\n` +
+      `📦 依頼：${panelName}\n` +
+      `🎫 チケット：${channel}`
+    );
+  }
+}
+      
       await interaction.editReply(
         `✅ チケットを作成しました → ${channel}`
       );
