@@ -1745,7 +1745,8 @@ async function loadTickets(){
   const r = await fetch("/api/tickets");
   if(!r.ok) throw new Error("HTTP " + r.status);
 
-  const data = await r.json();
+  const allData = await r.json();
+const data = allData.filter(t => t.status !== "completed");
 
   const priority = {
   new: 1,
