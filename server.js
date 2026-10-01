@@ -1249,6 +1249,64 @@ app.post("/api/tickets/:id/complete-job", async (req, res) => {
     });
   }
 });
+// ===== 依頼を完全削除 =====
+app.delete("/api/tickets/:id", async (req, res) => {
+  try {
+    const ticketId = req.params.id;
+
+    const { data: ticket, error } = await supabase
+      .from("tickets")
+      .select("*")
+      .eq("id", ticketId)
+      .single();
+
+    if (error || !ticket) {
+      return res.status(404).json({
+        ok: false,
+        error: "チケットが見つかりません"
+      });
+    }
+
+    // 関連メッセージを削除
+    const { error: messageDeleteError } = await supabase
+      .from("messages")
+      .delete()
+      .eq("ticket_id", ticketId);
+
+    if (messageDeleteError) throw messageDeleteError;
+
+    // Discordチャンネルが残っていれば削除
+    if (ticket.channel_id) {
+      const channel = await client.channels
+        .fetch(ticket.channel_id)
+        .catch(() => null);
+
+      if (channel) {
+        await channel.delete().catch(() => null);
+      }
+    }
+
+    // チケット本体を削除
+    const { error: ticketDeleteError } = await supabase
+      .from("tickets")
+      .delete()
+      .eq("id", ticketId);
+
+    if (ticketDeleteError) throw ticketDeleteError;
+
+    return res.json({
+      ok: true
+    });
+
+  } catch (error) {
+    console.error("Delete ticket error:", error);
+
+    return res.status(500).json({
+      ok: false,
+      error: "削除に失敗しました"
+    });
+  }
+});
 // ===== 売上集計 =====
 app.get("/api/sales", async (req, res) => {
   try {
