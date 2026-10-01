@@ -1672,6 +1672,8 @@ async function loadSales() {
 }
 
 async function showCompletedTickets() {
+window.completedViewOpen = true;
+
   try {
     const r = await fetch("/api/tickets");
     if (!r.ok) throw new Error("HTTP " + r.status);
