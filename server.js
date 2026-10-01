@@ -430,7 +430,7 @@ client.on("messageCreate", async (message) => {
 
   const { data: ticket, error } = await supabase
     .from("tickets")
-    .select("id, ai_enabled, request_details, intake_complete")
+    .select("id, ai_enabled, request_details, intake_complete, status")
     .eq("channel_id", message.channel.id)
     .maybeSingle();
 
