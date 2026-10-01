@@ -1882,8 +1882,8 @@ async function openTicket(id){
   ✅ 作業完了
 </button>
 
-<button
-  onclick="deleteTicket('${t.id}')"
+<button>
+ onclick="deleteTicket('\\${t.id}')"
   style="margin-top:10px;padding:10px 15px;background:#dc2626;color:white;border:none;border-radius:6px;cursor:pointer;"
 >
   🗑️ 削除
