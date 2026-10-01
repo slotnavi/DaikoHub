@@ -641,6 +641,28 @@ if (waitingPriceError) {
 } else {
   console.log("[WAITING PRICE]", ticket.id);
 }
+
+try {
+  const notifyChannelId = process.env.ADMIN_NOTIFY_CHANNEL_ID;
+
+  if (notifyChannelId) {
+    const notifyChannel = await client.channels.fetch(notifyChannelId);
+
+    if (notifyChannel) {
+      await notifyChannel.send(
+        "💴 **料金設定が必要です！**\n\n" +
+        `👤 お客様：${message.author.username}\n` +
+        `📦 依頼：${newDetails.service || "不明"}\n` +
+        `🎯 目標：${newDetails.target || "不明"}\n` +
+        `⏰ 期限：${newDetails.deadline || "不明"}\n` +
+        `🎫 チケット：${message.channel}`
+      );
+    }
+  }
+} catch (notifyError) {
+  console.error("[PRICE NOTIFY ERROR]", notifyError);
+}
+          
   return;
 }
       }
