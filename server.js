@@ -1994,16 +1994,38 @@ if("Notification" in window &&
 loadTickets();
 loadSales();
 
-setInterval(() => {
+setInterval(async () => {
   if (window.completedViewOpen) return;
 
-  loadTickets();
+  await loadTickets();
+  await loadSales();
 
-  if (selectedId) {
-    openTicket(selectedId);
+  if (!selectedId) return;
+
+  try {
+    const r = await fetch("/api/tickets/" + selectedId + "/messages?ts=" + Date.now(), {
+      cache: "no-store"
+    });
+
+    const messages = await r.json();
+    const box = document.querySelector(".messages");
+
+    if (!box) return;
+
+    box.innerHTML =
+      "<h3>会話</h3>" +
+      (messages.length
+        ? messages.map(m =>
+            '<div class="message ' + (m.sender === "bot" ? "bot" : "") + '">' +
+              '<div class="sender">' + esc(m.sender_name || m.sender) + '</div>' +
+              '<div>' + esc(m.content) + '</div>' +
+            '</div>'
+          ).join("")
+        : '<div class="empty">まだメッセージがありません</div>');
+
+  } catch (e) {
+    console.error("message refresh error:", e);
   }
-
-  loadSales();
 }, 3000);
 
 async function setPrice(ticketId) {
