@@ -1812,6 +1812,7 @@ data.sort((a, b) =>
 }
 }
 async function openTicket(id){
+window.completedViewOpen = false;
  selectedId=id;
  document.body.classList.add("open");
 
